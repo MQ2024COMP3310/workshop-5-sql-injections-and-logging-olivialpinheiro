@@ -127,11 +127,16 @@ public class SQLiteConnectionManager {
      */
     public void addValidWord(int id, String word) {
 
-    String category = getCategory();
-    String query2 = "SELECT ITEM,PRICE FROM PRODUCT WHERE ITEM_CATEGORY=? ORDER BY PRICE";
-    PreparedStatement statement = connection.prepareStatement(query2);
-    statement.setString(1, category);
-    ResultSet results = statement.executeQuery();
+  String sql = "INSERT INTO validWords(id,word) VALUES('?, ?')";
+
+        try (Connection conn = DriverManager.getConnection(databaseURL);
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setInt(1, id);
+                    pstmt.setString(2, word);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
 
     }
 
@@ -143,11 +148,21 @@ public class SQLiteConnectionManager {
      */
     public boolean isValidWord(String guess) {
 
-String category = getCategory(); 
-String query2 = "SELECT ITEM, PRICE FROM PRODUCT WHERE ITEM_CATEGORY=? ORDER BY PRICE"; 
-PreparedStatement statement = connection.prepareStatement(query2); 
-statement.setString(1, category); 
-ResultSet results = statement.executeQuery(); 
+    String query = "SELECT count(id) as total FROM validWords WHERE word like ?";
+        try (Connection conn = DriverManager.getConnection(databaseURL);
+                PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setString(1, guess);
+            ResultSet resultRows = stmt.executeQuery();
+            if (resultRows.next()) {
+                int result = resultRows.getInt("total");
+                return (result >= 1);
+            }
 
+            return false;
+
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, e.getMessage());
+            return false;
+        }
     }
 }

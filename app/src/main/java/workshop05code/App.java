@@ -80,13 +80,18 @@ public class App {
                     System.out.println("Success! It is in the the list.\n");
                 }else{
                     System.out.println("Sorry. This word is NOT in the the list.\n");
-                }
+                } 
+            } else { 
+
+                    System.out.println("Invalid input. Please enter a 4-letter word consisting only of lowercase letters a-z.");
+                    logger.log(Level.INFO, "Invalid guess");
+            }
 
                 System.out.print("Enter a 4 letter word for a guess or q to quit: " );
                 guess = scanner.nextLine();
             }
         } catch (NoSuchElementException | IllegalStateException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "An error occurred during input", e);
         }
 
     }
