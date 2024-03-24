@@ -129,6 +129,13 @@ public class SQLiteConnectionManager {
 
         String sql = "INSERT INTO validWords(id,word) VALUES('" + id + "','" + word + "')";
 
+String category = getCategory();
+    String query2 = "SELECT ITEM,PRICE FROM PRODUCT WHERE ITEM_CATEGORY=? ORDER BY PRICE";
+    PreparedStatement statement = connection.prepareStatement(query2);
+    statement.setString(1, category);
+    ResultSet results = statement.executeQuery();
+
+
         try (Connection conn = DriverManager.getConnection(databaseURL);
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.executeUpdate();
@@ -146,6 +153,12 @@ public class SQLiteConnectionManager {
      */
     public boolean isValidWord(String guess) {
         String sql = "SELECT count(id) as total FROM validWords WHERE word like'" + guess + "';";
+
+        String category = getCategory(); 
+String query2 = "SELECT ITEM, PRICE FROM PRODUCT WHERE ITEM_CATEGORY=? ORDER BY PRICE"; 
+PreparedStatement statement = connection.prepareStatement(query2); 
+statement.setString(1, category); 
+ResultSet results = statement.executeQuery(); 
 
         try (Connection conn = DriverManager.getConnection(databaseURL);
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
